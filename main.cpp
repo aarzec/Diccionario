@@ -1,6 +1,4 @@
 #include <gtkmm.h>
-#include <gst/gst.h>
-#include <gobject/gsignal.h>
 #include <curl/curl.h>
 #include <iostream>
 #include <sstream>
@@ -158,8 +156,6 @@ class MainWindow : public Gtk::Window {
 
     Gtk::Image m_image;
 
-    GstElement *pipeline;
-
     void on_button_clicked() {
         std::string input_text = m_entry.get_text();
         if (input_text.empty()) {
@@ -267,33 +263,6 @@ class MainWindow : public Gtk::Window {
         m_box.pack_start(m_image);
 
         show_all_children();
-    }
-
-    static void on_pad_added(GstElement *src, GstPad *new_pad, GstElement *conv) {
-        GstPad *sink_pad = gst_element_get_static_pad(conv, "sink");
-        if (gst_pad_is_linked(sink_pad)) {
-            g_object_unref(sink_pad);
-            return;
-        }
-
-        GstCaps *new_pad_caps = gst_pad_get_current_caps(new_pad);
-        GstStructure *new_pad_struct = gst_caps_get_structure(new_pad_caps, 0);
-        const gchar *new_pad_type = gst_structure_get_name(new_pad_struct);
-
-        if (!g_str_has_prefix(new_pad_type, "audio/x-raw")) {
-            gst_caps_unref(new_pad_caps);
-            g_object_unref(sink_pad);
-            return;
-        }
-
-        gst_pad_link(new_pad, sink_pad);
-        gst_caps_unref(new_pad_caps);
-        g_object_unref(sink_pad);
-    }
-
-    ~MainWindow() {
-        gst_element_set_state(pipeline, GST_STATE_NULL);
-        gst_object_unref(pipeline);
     }
 };
 
