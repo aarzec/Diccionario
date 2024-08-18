@@ -4,5 +4,5 @@ Pequeño programa que usa APIs externas para traducir palabras del inglés al es
 # Prerrequisitos:
 
 ```bash
-sudo apt-get install libgtkmm-3.0-dev espeak
+sudo apt-get install libgtkmm-3.0-dev libcurl4-openssl-dev espeak
 ```
